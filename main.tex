@@ -1,0 +1,51 @@
+\documentclass[12pt, a4paper, twoside]{article}
+
+%% Preamble
+\usepackage{umatfgenglish}
+\usepackage{blindtext}
+\usepackage[backend = biber, hyperref,backref = true, style=apa]{biblatex}
+\usepackage{hyperref}
+\usepackage{fontspec}
+
+\addbibresource{references.bib}
+\graphicspath{{images/}{../images/}}
+
+\setmonofont{[Iosevka.ttf]}
+
+\usepackage{subfiles} % Best loaded last in the preamble
+
+\begin{document}
+
+%% Cover
+\includepdf[noautoscale=true, width=\paperwidth]{title.pdf}
+
+\newpage
+
+%% Abstract
+\subfile{sections/abstract}
+
+\tableofcontents
+
+%% Sections
+\section{Introduction}
+\subfile{sections/introduction}
+
+\section{Concepts of Functional Programming}
+\subfile{sections/functionalprogramming}
+
+%% Bibliography
+\printbibliography
+
+\newpage
+
+%% Apendices
+\begin{umaappendices}
+\section{Installation \\ Manual}
+    
+    \textbf{\large{Requirements:}}
+    
+    \blindtext
+
+\end{umaappendices}
+
+\end{document}

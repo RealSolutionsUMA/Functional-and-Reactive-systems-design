@@ -1,0 +1,61 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\subsection{Introduction}
+Functional programming is a programming paradigm in which programs are structured as a composition of pure functions \autocite{Hughes1989WhyMatters}.
+
+Pure functions, in contrast to function constructs of programming languages, refer to the mathematical concept of a function. In mathematics "a function f from S to T, where S and T are non-empty sets, is a rule that associates with each element of S (the domain) a unique element of T (the codomain)" \autocite{NicholsonTheMathematics}. [[Include image of two related sets]].
+
+Although this is the mathematical definition, in the domain of a programming language it could also be stated that "a pure function has no observable effect on the execution of the program other than to compute a result given its inputs" \autocite{Chiusano2013FunctionalScala}
+
+However, functions constructs in many programming languages don't have the traits of mathematical functions. As an example let's take this function written in [introduce programming language]. [Explain example].
+
+The elements which make language functions not perform as mathematical functions are called side effects. To make differentiation functions that don't have side effects are referred to as pure functions\autocite{UsingAttributes} while functions that have side effects are called procedures.
+
+Side effects that can make a function not pure are \autocite{SpulerCompilerEffects}.
+
+\begin{itemize}
+  \item Performing I/O
+  \item Modifying a variable
+  \item Modifying a data structure in place
+\end{itemize}
+
+[[Set examples of broken purity]]
+
+\subsection{Referential transparency}
+When treating with pure functions there is a one to one relation betweeen a function call and the result it produces. For example we can see that the expression $2 + 2$ is the same as $4$. In mathematics this is a very important property when solving equations. On the process of solving them usually both sides of it are simplified by applying operations that reduce the number of elements on each side until we get a simple expression that its trivial to solve [[Include example]].
+
+This property is called referential transparency \autocite{Strachey2000FundamentalLanguages} and is a very important property of functional programming.
+
+The reason of why referential transparency is only possible when using pure functions lies in its definition. If a function is not pure, an element of the domain may be related with multiple elements of the codomain, thus, it is not posible to know a priori which is the related element to the input. [[Include another example]]
+
+\subsubsection{Local reasoning}
+One of the benefits of referential transparency is local reasoning. In order to understand how a function behaves it is only necesary to understand the components of the function itself and not the context in which its placed. 
+
+When referential transparency is not present this is no longer possible. As an example consider a function which depends on a global variable \texttt{name}, and returns a greeting with that name [[Introduce the example]].
+
+To understand the behaviour of the function it is needed to know the context in which it is called, i.e. inspect where the variable \texttt{name} is assigned and also when assignments to the variable occur previous to the function call.
+
+But even though it is possible to analyse the behaviour at a certain point in time it is not possible to ensure that without changes to the function itself, the functionality will keep the same, as changes in the context of the function regarding the variable \texttt{name} may change the behaviour of the function in the future [[Introduce new example]].
+
+\subsubsection{The substitution model and equational reasoning}
+
+When referential transparency is given, a new reasoning model for functional programs can be achieved, called equational reasoning. When reasoning about a functional program it is possible to start substituting function calls for the value they result in.
+To understand how a program behaves in term of its inputs the only thing its needed to do is to start changing the calls for results they producce. [[Do and follow an example of RT]]
+
+The substitution model can be useful in multiple scenarios. For example, to debug errors, this model can be applied. The first step is to get the arguments of the misbehaving function. Once they have been acquired the next step is to start substituting. For every substitution, it is checked that the result of it is the one expected. At the moment that a function results to a non expected result the cause of the error is found.
+
+This process can be done automatically by running a debugger which allows to evaluate expressions and also manually by calculating the results by hand. A mixed approach could be by using a REPL (Read–eval–print loop). This tool allows to import certain functions and use them interactively. Some examples are The Scala REPL and GHCi for Haskell. An example of use is shown [[Introduce example]].
+
+\subsubsection{Function Composition and safe refactorings}
+The substitution model can also be used to safely refactor code when repetitions occur [[Explain later]].  
+The main reason of why functional code can be safely refactored is because of function composition. As defined at the beginning of the section functional programs are defined by the composition of functions.
+
+A function takes as input an element of the type of its domain ($A$) and produces a result of the type of its codomain ($B$). The notation that will be used for representing such functions will be the same as the Scala programming language uses. The function previously mentioned would be represented as \texttt{f: A => B}.
+
+If we have a function \texttt{f: A => B} and another function \texttt{g: B => C} both can be composed by mathematical composition $g \circ f$ to create a new function \texttt{h: A => C}.
+
+This way it is possible to refactor a set of expressions used within a function to a new one. This can be achieved safely as long as side effects are not present in them.
+
+\end{document}
