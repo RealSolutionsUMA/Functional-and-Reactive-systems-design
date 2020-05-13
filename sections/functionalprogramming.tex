@@ -48,7 +48,7 @@ The substitution model can be useful in multiple scenarios. For example, to debu
 
 This process can be done automatically by running a debugger which allows to evaluate expressions and also manually by calculating the results by hand. A mixed approach could be by using a REPL (Read–eval–print loop). This tool allows to import certain functions and use them interactively. Some examples are The Scala REPL and GHCi for Haskell. An example of use is shown [[Introduce example]].
 
-\subsubsection{Function Composition and safe refactorings}
+\subsubsection{Function Composition and safe refactoring}
 The substitution model can also be used to safely refactor code when repetitions occur [[Explain later]].  
 The main reason of why functional code can be safely refactored is because of function composition. As defined at the beginning of the section functional programs are defined by the composition of functions.
 
@@ -56,6 +56,28 @@ A function takes as input an element of the type of its domain ($A$) and produce
 
 If we have a function \texttt{f: A => B} and another function \texttt{g: B => C} both can be composed by mathematical composition $g \circ f$ to create a new function \texttt{h: A => C}.
 
-This way it is possible to refactor a set of expressions used within a function to a new one. This can be achieved safely as long as side effects are not present in them.
+This way it is possible to refactor a set of expressions used within a function to a new one. This can be achieved safely as long as side effects are not present in them. [[Follow an example using this]].
+
+This is also a corollary of the substitution principle as how the function composition mechanism works
+
+\subsection{Functional programming languages}
+The functional programming paradigm suits better in some programming languages that in others. This usually lies in the constructs a language gives to create programs. 
+
+\subsubsection{Statements and expressions}
+In imperative languages, building blocks are usually conditional and loop statements. This constructs are inherently non functional as the way they behave is by having declared variables that gets updated in this statements. This is very clear in C style for and while loops. 
+
+A while loop evaluate an expression. If this expression is true the block of the while code is executed. In case it is false the next statement to the block is executed.
+
+The definition of the while loop spots the lack of referential transparency. It expects that a expression can produce two different values. Some times it will be false and at least once it will be true if the loop ends.
+
+The for statement have a similar behaviour to the while. With the add of a first statement that will be executed previous to the first loop and a second one that will be executed at the end of each loop.
+
+Even if the expression used in the condition of the loops was referential transparent the statements would add no value to the programs. A condition that evaluates to true would makes an infinite loop which would never produce any value and if it was false the block would never get executed.
+
+The if statement of imperative languages has the problem that does not produce any value. The code block of the if statement has to do a side effect, like modifying a variable, in order to do something useful.
+
+There is one exception in which the if statement could produce a value while not breaking referential transparency. Which is in the case that the return of the function is done inside the if block.
+
+
 
 \end{document}
