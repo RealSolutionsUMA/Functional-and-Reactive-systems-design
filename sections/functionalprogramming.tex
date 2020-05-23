@@ -60,12 +60,13 @@ This way it is possible to refactor a set of expressions used within a function 
 
 This is also a corollary of the substitution principle as how the function composition mechanism works
 
-\subsection{Functional programming languages}
+\subsection{Functional programming constructs and programming languages}
 The functional programming paradigm suits better in some programming languages that in others. This usually lies in the constructs a language gives to create programs. 
 
 \subsubsection{Statements and expressions}
 In imperative languages, building blocks are usually conditional and loop statements. This constructs are inherently non functional as the way they behave is by having declared variables that gets updated in this statements. This is very clear in C style for and while loops. 
 
+\subsubsection{Imperative statements}
 A while loop evaluate an expression. If this expression is true the block of the while code is executed. In case it is false the next statement to the block is executed.
 
 The definition of the while loop spots the lack of referential transparency. It expects that a expression can produce two different values. Some times it will be false and at least once it will be true if the loop ends.
@@ -74,10 +75,49 @@ The for statement have a similar behaviour to the while. With the add of a first
 
 Even if the expression used in the condition of the loops was referential transparent the statements would add no value to the programs. A condition that evaluates to true would makes an infinite loop which would never produce any value and if it was false the block would never get executed.
 
-The if statement of imperative languages has the problem that does not produce any value. The code block of the if statement has to do a side effect, like modifying a variable, in order to do something useful.
+The if/else statement of imperative languages has the problem that does not produce any value. The code block of it has to do a side effect, like modifying a variable, in order to do something useful.
 
-There is one exception in which the if statement could produce a value while not breaking referential transparency. Which is in the case that the return of the function is done inside the if block.
+There is one exception in which the if/else statement could produce a value while not breaking referential transparency. Which is in the case that the return of the function is done inside the if block [[Another example]].
 
+\subsubsection{Functional expressions}
+Functional programming languages by contrast provide construct that enable composing programs by referential transparent expressions. To provide conditional logic Scala provides an if/else expression. In contrast to the if/else statement the expression produces a value, which is the result of the expression of the block that get executed \footnote{In case that the if expression doesn't contain an else and the condition is not satisfied the returned value is the Unit \autocite{ScalaScala.Unit}}.
 
+Another expression that Scala provides is the for expression. A for expression traverses a data structure in order to produce a new one by filtering and transforming the element of it. At a later moment in the document [[Complete with chapter when ready]] for expressions will be revisited and explained in greater detail.
 
+Along with the if and the for expressions a way to iterate and construct functional programs is by using recursion. Recursion is a useful tool in order to loop through collections without breaking referential transparency. The problem with recursion is that each nested call makes the run time allocate one extra frame in the stack to save the context in which the recursive call was made.
+
+There is a way to overcome this, as functions in which the last expression calculated is the recursive call, called tail-recursive, can be efficiently implemented by an optimisation of the compiler which can substitute the recursive call for a \texttt{goto} statement without the expenses of new stack frame allocations \autocite{Steele1977DebunkingGoto} \footnote{In Scala in order to tell the compiler to fail if the substitution cannot be done the \texttt{@tailrec} annotation can be used\autocite{ScalaScala.annotation.tailrec}} [[As always follow an example]]
+
+\subsubsection{Higher order functions}
+Higher order functions refer to functions which accept functions as parameters. In Scala functions have their own type, like \texttt{String}s or \texttt{Int}s do. This way they are treated as other kind of values. As an example a string trimming function can be created. This function will iterate character by character the string and will remove the element if a specific condition is met. The predicate to remove a character is decided by the caller. [[Introduce example]]
+
+\subsection{Parametric polymorphism and Type classes}
+\subsubsection{Parametric polymorphism}
+Functional programming can express polymorphism by the use of generic types in function declarations. It allow functions to take parameters with an abstract type. In Scala to use a generic type in a function, the generic must be defined between square brackets after the function name. This way the function can be defined one time but used by different types. As an example a list length function can be defined. 
+
+[[Example parriba y pabajo]]
+
+This function will take a \texttt{List[A]} of elements of a generic type \texttt{A} and compute the length of it regardless of the actual type of the elements of the list. When the function is called the actual type [A] will be resolved.
+
+\subsubsection{Type classes}
+Although parametric polymorphism is good when the details of the generic type are irrelevant it lacks the possibility to define a behaviour that is associated with the type itself. 
+
+Type classes \footnote{Not to be confused with Object Oriented classes} was defined in Haskell as a way to implement Ad-hoc polymorphism \autocite{Hall1994TypeHaskell}. A type class is an abstract representation of a behaviour that types which belong to the class posses. If a type can implement the type class behaviour it becomes an instance of it and the type itself belongs to the class. 
+
+[[Present example]]
+
+In Scala, implicit resolution was implemented as a way to have type classes resolved at compile time without the need of the function caller to provide the instance manually and have it resolved automatically by the compiler in an object oriented language \autocite{Oliveira2010TypeImplicits}.
+
+Typeclasses are a very useful because they allow to decouple structure from behaviour. If a specific behaviour is desired for a given type it is not needed to modify the source of the type itself, a type class instance can be provided in a separate source file. This is specially useful when using third party compiled dependencies. If a new functionality it is required for them as they are compiled its source code cannot be modified. However a type class instance can be provided to enrich its capabilities.
+
+[[Rellenar con type classes]]
+
+\subsection{Functional data structures}
+At the beginning of the section among the different kind of side effects one of the mentioned was \textit{Modifying a data structure in place}. If modifying a data structure in place produces a side effect and breaks referential transparency data structures must be defined immutable by default, and as a corollary on this property, operations on them must not modify their internals but return a new one with the changes desired.
+
+Languages that weren't designed to be functional usually define their data structures as mutable ones. In Java, the Collection class, root of the hierarchy of a great number of data structures defines most of its operations as mutable \autocite{Collection}. As an example the method add has the following definition \texttt{boolean add(E e)}. The returned type of the method is a boolean, which according to the documentation "is true if this collection changed as a result of the call". The definition implies that mutation has been done in place.
+
+The main problem with this is that libraries that want to subclass the Java Collections API and be compatible with the standard library have to maintain this constraints. This has lead to immutable collection implementations like Google's Guava Immutable Collection library \autocite{ImmutableCollectionAPI} serving only as immutable representations of data structures but not providing a rich set of operations to modify them.
+
+Scala for example provides two type of collections. Immutable and Mutable ones. Scala documentation states "Scala collections systematically distinguish between mutable and immutable collections. A mutable collection can be updated or extended in place. This means you can change, add, or remove elements of a collection as a side effect. Immutable collections, by contrast, never change. You have still operations that simulate additions, removals, or updates, but those operations will in each case return a new collection and leave the old collection unchanged" \autocite{MutableDocumentation}.
 \end{document}
