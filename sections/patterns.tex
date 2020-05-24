@@ -1,0 +1,77 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
+
+\subsection{Computational effects}
+In 1991 Eugenio Moggi [[Insert citation]] described a model in category theory
+for separating the set of values a object \texttt{A} could have from the notion
+of a computation of it, \texttt{T A}, which had an effect on top of this type.
+This computation abstracts from the type \texttt{A} the posible results that the
+computation could have. Some examples of computations mentioned on the text of
+interest to this topics are.
+
+\begin{itemize}
+\item Side effects that modify an set of possible states \texttt{S}: \texttt{State[A, S]}
+\item Exceptions where \texttt{E} is the set of possible exceptions: \texttt{Either[A, E]}
+\item Interactive Input/Output which results in an \texttt{A} value: \texttt{IO[A]}
+\end{itemize}
+
+From a programming point of view a very interesting finding of that article is
+that this effect over \texttt{A} can be abstracted and define operations that transform
+the type A regardless of the effect in which it was contained as long as the
+effect \texttt{F} is a monad. %% Is a monad? Has a monad?
+
+\subsubsection{Monads}
+A monad is category that provides two operations over a type constructor
+\texttt{F[\_]}, \texttt{flatMap}\footnote{On literature is also usually called bind} and
+\texttt{pure}\footnote{Also known as point or return}. In the following figure the a
+trait that defines the Monad typeclass in Scala is defined.
+
+[[Example]]
+
+The semantics of the operations can be inferred by following the types of them.
+The pure function takes a value \texttt{a} and lifts it to the monad context
+\texttt{F}. The flatMap operation takes a monad \texttt{F[a]} and a function
+which transform an \texttt{a} into a monad with the same context but a possible
+different type \texttt{F[B]}. This operation mantains the monad context.
+
+\subsection{Example of monadic effects}
+Then some monads instances can be defined for different effects.
+
+\paragraph{Option Monad}
+The Option Monad is an effect which may have a value of a type \texttt{A} or
+not. An \texttt{Option[A]} has two possible values. \texttt{Some} which means
+that the value is present or \texttt{None} meaning that there is no value.
+
+The function flatMap in this case returns a transformed \texttt{Some} if the monad in which
+it was applied was also a \texttt{Some} or directly returns a \texttt{None} if
+the monad was empty and no transformation could be applied
+
+\paragraph{State Monad}
+The State Monad is an effect which given an state of type \texttt{S} performs an state
+transition resulting in a value of type \texttt{A}, modeling an state machine.
+As state cannot be mutated in place the state transation returns both the new
+state and the resulting value. It can be defined this way
+
+When using the state monad flatMap directly returns a monad with the new state
+avoiding to explicitly pass the state all along the way.
+
+\paragraph{IO Monad}
+Side effects are inherently non functional. A side effect such as reading input
+from the keyboard implies that every time that this operation is called the
+outcome may be different breaking referential transparency.
+
+However if we look to the description of operations that do side effects they
+have nothing that implies a breaking of referential transparency. For example
+the function read from keyboard whould have the type \texttt{() => A} which a
+pure function could have.
+
+If the side effect is abstracted from the function definition the purity is
+mantained. This is what the IO monad does. When a function is passed to the IO
+the execution is suspended. It is not executed until the programmer runs the
+computation, moment at which purity is lost.
+
+If side effects execution is delayed until the very end of the execution programs
+can keep functional at its core and the benefits of purity are not lost until
+the interpretation of the side effects.
