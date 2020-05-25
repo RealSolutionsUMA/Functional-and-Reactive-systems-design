@@ -3,7 +3,7 @@
 %%% TeX-master: "main"
 %%% End:
 
-\subsection{Computational effects}
+\subsection{Improving Resilience with Computational effects}
 In 1991 Eugenio Moggi [[Insert citation]] described a model in category theory
 for separating the set of values a object \texttt{A} could have from the notion
 of a computation of it, \texttt{T A}, which had an effect on top of this type.
@@ -48,6 +48,13 @@ The function flatMap in this case returns a transformed \texttt{Some} if the mon
 it was applied was also a \texttt{Some} or directly returns a \texttt{None} if
 the monad was empty and no transformation could be applied
 
+\paragraph{Either Monad}
+When a function can either succeed or fail the Either Effect encodes this
+possibility, represented with the type \texttt{Either[E, A]} it has two possible
+disjoint values. Either are usually right biased, being the \texttt{A} or
+``right'' value the one meaning the success and the \texttt{E} value the one
+meaning an error.
+
 \paragraph{State Monad}
 The State Monad is an effect which given an state of type \texttt{S} performs an state
 transition resulting in a value of type \texttt{A}, modeling an state machine.
@@ -75,3 +82,22 @@ computation, moment at which purity is lost.
 If side effects execution is delayed until the very end of the execution programs
 can keep functional at its core and the benefits of purity are not lost until
 the interpretation of the side effects.
+
+\subsubsection{The resilience of computational effects}
+In static typed programming languages effects offers greater resilience as the
+programmer has to explicitly deal with the effect and can not ignore the
+effectful nature like having a possible error, like Either, or being a possibly
+future value, i. e. IO.
+
+This implicit treatment of effects like the use of a \texttt{Null} pointer has
+lead to great number of mistakes, being called by one of the first designer of
+it, Tony Hoare, its billion dolar mistake.
+
+Nullability is not the only case of implicit effects. The use of unchecked
+exceptions in object oriented programming languages can let errors be propagated
+without the programmer supervision.
+
+Effects are then a pattern that improve the reactiveness of functional programs by
+improving the resilience with the use of the type system.
+
+\subsection{Avoiding thread blocking by the use of Futures}
