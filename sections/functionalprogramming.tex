@@ -2,18 +2,58 @@
 
 \begin{document}
 
-\subsection{Introduction}
-Functional programming is a programming paradigm in which programs are structured as a composition of pure functions \autocite{Hughes1989WhyMatters}.
+\subsection{Introduction} Functional programming is a programming paradigm in
+which programs are structured as a composition of pure functions
+\autocite{Hughes1989WhyMatters}
 
-Pure functions, in contrast to function constructs of programming languages, refer to the mathematical concept of a function. In mathematics "a function f from S to T, where S and T are non-empty sets, is a rule that associates with each element of S (the domain) a unique element of T (the codomain)" \autocite{NicholsonTheMathematics}. [[Include image of two related sets]].
+Pure functions, by contrast to function constructs of programming languages,
+refer to the mathematical concept of a function. In mathematics "a function \textit{f}
+from A to B, where A and B are non-empty sets, is a rule that associates with
+each element of A (the domain) a unique element of B (the codomain)"
+\autocite{NicholsonTheMathematics}.
 
-Although this is the mathematical definition, in the domain of a programming language it could also be stated that "a pure function has no observable effect on the execution of the program other than to compute a result given its inputs" \autocite{Chiusano2013FunctionalScala}
+\begin{figure}[ht]
+  \centering \includegraphics[width=0.5\textwidth]{Function}
+  \caption{\label{fig:label} A visual representation of the function f}
+\end{figure}
 
-However, functions constructs in many programming languages don't have the traits of mathematical functions. As an example let's take this function written in [introduce programming language]. [Explain example].
 
-The elements which make language functions not perform as mathematical functions are called side effects. To make differentiation functions that don't have side effects are referred to as pure functions\autocite{UsingAttributes} while functions that have side effects are called procedures.
+Although this is the mathematical definition, in the domain of programming
+languages it could also be stated that "a pure function has no observable effect
+on the execution of the program other than to compute a result given its inputs"
+\autocite{Chiusano2013FunctionalScala}.
 
-Side effects that can make a function not pure are \autocite{SpulerCompilerEffects}.
+Function constructs in many programming languages don't have the
+traits of mathematical functions. One example of it is the one represented in
+Listing \ref{lst:addconsole}. This function reads from the console an integer
+and returns this read integer added to the parameter n.
+
+\lstinputlisting[
+  caption=An example of an impure function,
+  captionpos=b,
+  label={lst:addconsole}
+]{readline.sc}
+
+This function breaks the definition of a pure function. In figure
+\ref{fig:readLineN} a Scala interactive session is ran with the previous
+function defined. In this session it can be observed that for the same function input
+$2$ two different outputs are returned, \texttt{res1: Int = 5} and \texttt{res1:
+  Int = 6} which is a violation of the definition of pure function given before.
+
+\begin{figure}[ht]
+  \centering \includegraphics[width=0.5\textwidth]{readline}
+  \caption{\label{fig:readLineN} An Scala interactive session showing how the
+    \texttt{readLine} function is not pure}
+\end{figure}
+
+
+The elements which make language functions not perform as mathematical functions
+are called side effects. To make differentiation functions that don't have side
+effects are referred to as pure functions\autocite{UsingAttributes} while
+functions that have side effects are called procedures.
+
+Side effects that can make a function not pure are
+\autocite{SpulerCompilerEffects}.
 
 \begin{itemize}
   \item Performing I/O
@@ -21,105 +61,241 @@ Side effects that can make a function not pure are \autocite{SpulerCompilerEffec
   \item Modifying a data structure in place
 \end{itemize}
 
-[[Set examples of broken purity]]
+\subsection{Referential transparency} When treating with pure functions there is
+a one to one relation betweeen a function call and the result it produces. For
+example we can see that the expression $2 + 2$ is the same as $4$. In
+mathematics this is a very important property when solving equations. On the
+process of solving them usually both sides of it are simplified by applying
+operations that reduce the number of elements on each side until we get a simple
+expression that its trivial to solve [[Include example]].
 
-\subsection{Referential transparency}
-When treating with pure functions there is a one to one relation betweeen a function call and the result it produces. For example we can see that the expression $2 + 2$ is the same as $4$. In mathematics this is a very important property when solving equations. On the process of solving them usually both sides of it are simplified by applying operations that reduce the number of elements on each side until we get a simple expression that its trivial to solve [[Include example]].
+This property is called referential transparency
+\autocite{Strachey2000FundamentalLanguages} and is a very important property of
+functional programming.
 
-This property is called referential transparency \autocite{Strachey2000FundamentalLanguages} and is a very important property of functional programming.
+The reason of why referential transparency is only possible when using pure
+functions lies in its definition. If a function is not pure, an element of the
+domain may be related with multiple elements of the codomain, thus, it is not
+posible to know a priori which is the related element to the input. [[Include
+another example]]
 
-The reason of why referential transparency is only possible when using pure functions lies in its definition. If a function is not pure, an element of the domain may be related with multiple elements of the codomain, thus, it is not posible to know a priori which is the related element to the input. [[Include another example]]
+\subsubsection{Local reasoning} One of the benefits of referential transparency
+is local reasoning. In order to understand how a function behaves it is only
+necesary to understand the components of the function itself and not the context
+in which its placed.
 
-\subsubsection{Local reasoning}
-One of the benefits of referential transparency is local reasoning. In order to understand how a function behaves it is only necesary to understand the components of the function itself and not the context in which its placed. 
+When referential transparency is not present this is no longer possible. As an
+example consider the function defined in Listing \ref{lst:greeting} which
+depends on a global variable \texttt{name}, and returns a greeting to that name.
 
-When referential transparency is not present this is no longer possible. As an example consider a function which depends on a global variable \texttt{name}, and returns a greeting with that name [[Introduce the example]].
+\lstinputlisting[
+  caption=A function which greets \texttt{name},
+  captionpos=b,
+  label={lst:greeting}
+]{Greet.sc}
 
-\lstinputlisting[language=Scala]{code/sbc.sc}
+To understand the behaviour of the function it is needed to know the context in
+which it is called, i.e. inspect where the variable \texttt{name} is assigned
+and also when assignments to the variable occur previous to the function call.
 
-To understand the behaviour of the function it is needed to know the context in which it is called, i.e. inspect where the variable \texttt{name} is assigned and also when assignments to the variable occur previous to the function call.
-
-But even though it is possible to analyse the behaviour at a certain point in time it is not possible to ensure that without changes to the function itself, the functionality will keep the same, as changes in the context of the function regarding the variable \texttt{name} may change the behaviour of the function in the future [[Introduce new example]].
+But even though it is possible to analyse the behaviour at a certain point in
+time it is not possible to ensure that without changes to the function itself,
+the functionality will keep the same, as changes in the context of the function
+regarding the variable \texttt{name} may change the behaviour of the function in
+the future [[Introduce new example]].
 
 \subsubsection{The substitution model and equational reasoning}
 
-When referential transparency is given, a new reasoning model for functional programs can be achieved, called equational reasoning. When reasoning about a functional program it is possible to start substituting function calls for the value they result in.
-To understand how a program behaves in term of its inputs the only thing its needed to do is to start changing the calls for results they producce. [[Do and follow an example of RT]]
+When referential transparency is given, a new reasoning model for functional
+programs can be achieved, called equational reasoning. When reasoning about a
+functional program it is possible to start substituting function calls for the
+value they result in. To understand how a program behaves in term of its inputs
+the only thing its needed to do is to start changing the calls for results they
+producce. [[Do and follow an example of RT]]
 
-The substitution model can be useful in multiple scenarios. For example, to debug errors, this model can be applied. The first step is to get the arguments of the misbehaving function. Once they have been acquired the next step is to start substituting. For every substitution, it is checked that the result of it is the one expected. At the moment that a function results to a non expected result the cause of the error is found.
+The substitution model can be useful in multiple scenarios. For example, to
+debug errors, this model can be applied. The first step is to get the arguments
+of the misbehaving function. Once they have been acquired the next step is to
+start substituting. For every substitution, it is checked that the result of it
+is the one expected. At the moment that a function results to a non expected
+result the cause of the error is found.
 
-This process can be done automatically by running a debugger which allows to evaluate expressions and also manually by calculating the results by hand. A mixed approach could be by using a REPL (Read–eval–print loop). This tool allows to import certain functions and use them interactively. Some examples are The Scala REPL and GHCi for Haskell. An example of use is shown [[Introduce example]].
+This process can be done automatically by running a debugger which allows to
+evaluate expressions and also manually by calculating the results by hand. A
+mixed approach could be by using a REPL (Read–eval–print loop). This tool allows
+to import certain functions and use them interactively. Some examples are The
+Scala REPL and GHCi for Haskell. An example of use is shown [[Introduce
+example]].
 
-\subsubsection{Function Composition and safe refactoring}
-The substitution model can also be used to safely refactor code when repetitions occur [[Explain later]].  
-The main reason of why functional code can be safely refactored is because of function composition. As defined at the beginning of the section functional programs are defined by the composition of functions.
+\subsubsection{Function Composition and safe refactoring} The substitution model
+can also be used to safely refactor code when repetitions occur [[Explain
+later]]. The main reason of why functional code can be safely refactored is
+because of function composition. As defined at the beginning of the section
+functional programs are defined by the composition of functions.
 
-A function takes as input an element of the type of its domain ($A$) and produces a result of the type of its codomain ($B$). The notation that will be used for representing such functions will be the same as the Scala programming language uses. The function previously mentioned would be represented as \texttt{f: A => B}.
+A function takes as input an element of the type of its domain ($A$) and
+produces a result of the type of its codomain ($B$). The notation that will be
+used for representing such functions will be the same as the Scala programming
+language uses. The function previously mentioned would be represented as
+\texttt{f: A => B}.
 
-If we have a function \texttt{f: A => B} and another function \texttt{g: B => C} both can be composed by mathematical composition $g \circ f$ to create a new function \texttt{h: A => C}.
+If we have a function \texttt{f: A => B} and another function \texttt{g: B => C}
+both can be composed by mathematical composition $g \circ f$ to create a new
+function \texttt{h: A => C}.
 
-This way it is possible to refactor a set of expressions used within a function to a new one. This can be achieved safely as long as side effects are not present in them. [[Follow an example using this]].
+This way it is possible to refactor a set of expressions used within a function
+to a new one. This can be achieved safely as long as side effects are not
+present in them. [[Follow an example using this]].
 
-This is also a corollary of the substitution principle as how the function composition mechanism works
+This is also a corollary of the substitution principle as how the function
+composition mechanism works
 
-\subsection{Functional programming constructs and programming languages}
-The functional programming paradigm suits better in some programming languages that in others. This usually lies in the constructs a language gives to create programs. 
+\subsection{Functional programming constructs and programming languages} The
+functional programming paradigm suits better in some programming languages that
+in others. This usually lies in the constructs a language gives to create
+programs.
 
-\subsubsection{Statements and expressions}
-In imperative languages, building blocks are usually conditional and loop statements. This constructs are inherently non functional as the way they behave is by having declared variables that gets updated in this statements. This is very clear in C style for and while loops. 
+\subsubsection{Statements and expressions} In imperative languages, building
+blocks are usually conditional and loop statements. This constructs are
+inherently non functional as the way they behave is by having declared variables
+that gets updated in this statements. This is very clear in C style for and
+while loops.
 
-\subsubsection{Imperative statements}
-A while loop evaluate an expression. If this expression is true the block of the while code is executed. In case it is false the next statement to the block is executed.
+\subsubsection{Imperative statements} A while loop evaluate an expression. If
+this expression is true the block of the while code is executed. In case it is
+false the next statement to the block is executed.
 
-The definition of the while loop spots the lack of referential transparency. It expects that a expression can produce two different values. Some times it will be false and at least once it will be true if the loop ends.
+The definition of the while loop spots the lack of referential transparency. It
+expects that a expression can produce two different values. Some times it will
+be false and at least once it will be true if the loop ends.
 
-The for statement have a similar behaviour to the while. With the add of a first statement that will be executed previous to the first loop and a second one that will be executed at the end of each loop.
+The for statement have a similar behaviour to the while. With the add of a first
+statement that will be executed previous to the first loop and a second one that
+will be executed at the end of each loop.
 
-Even if the expression used in the condition of the loops was referential transparent the statements would add no value to the programs. A condition that evaluates to true would makes an infinite loop which would never produce any value and if it was false the block would never get executed.
+Even if the expression used in the condition of the loops was referential
+transparent the statements would add no value to the programs. A condition that
+evaluates to true would makes an infinite loop which would never produce any
+value and if it was false the block would never get executed.
 
-The if/else statement of imperative languages has the problem that does not produce any value. The code block of it has to do a side effect, like modifying a variable, in order to do something useful.
+The if/else statement of imperative languages has the problem that does not
+produce any value. The code block of it has to do a side effect, like modifying
+a variable, in order to do something useful.
 
-There is one exception in which the if/else statement could produce a value while not breaking referential transparency. Which is in the case that the return of the function is done inside the if block [[Another example]].
+There is one exception in which the if/else statement could produce a value
+while not breaking referential transparency. Which is in the case that the
+return of the function is done inside the if block [[Another example]].
 
-\subsubsection{Functional expressions}
-Functional programming languages by contrast provide construct that enable composing programs by referential transparent expressions. To provide conditional logic Scala provides an if/else expression. In contrast to the if/else statement the expression produces a value, which is the result of the expression of the block that get executed \footnote{In case that the if expression doesn't contain an else and the condition is not satisfied the returned value is the Unit \autocite{ScalaScala.Unit}}.
+\subsubsection{Functional expressions} Functional programming languages by
+contrast provide construct that enable composing programs by referential
+transparent expressions. To provide conditional logic Scala provides an if/else
+expression. In contrast to the if/else statement the expression produces a
+value, which is the result of the expression of the block that get executed
+\footnote{In case that the if expression doesn't contain an else and the
+condition is not satisfied the returned value is the Unit
+\autocite{ScalaScala.Unit}}.
 
-Another expression that Scala provides is the for expression. A for expression traverses a data structure in order to produce a new one by filtering and transforming the element of it. At a later moment in the document [[Complete with chapter when ready]] for expressions will be revisited and explained in greater detail.
+Another expression that Scala provides is the for expression. A for expression
+traverses a data structure in order to produce a new one by filtering and
+transforming the element of it. At a later moment in the document [[Complete
+with chapter when ready]] for expressions will be revisited and explained in
+greater detail.
 
-Along with the if and the for expressions a way to iterate and construct functional programs is by using recursion. Recursion is a useful tool in order to loop through collections without breaking referential transparency. The problem with recursion is that each nested call makes the run time allocate one extra frame in the stack to save the context in which the recursive call was made.
+Along with the if and the for expressions a way to iterate and construct
+functional programs is by using recursion. Recursion is a useful tool in order
+to loop through collections without breaking referential transparency. The
+problem with recursion is that each nested call makes the run time allocate one
+extra frame in the stack to save the context in which the recursive call was
+made.
 
-There is a way to overcome this, as functions in which the last expression calculated is the recursive call, called tail-recursive, can be efficiently implemented by an optimisation of the compiler which can substitute the recursive call for a \texttt{goto} statement without the expenses of new stack frame allocations \autocite{Steele1977DebunkingGoto} \footnote{In Scala in order to tell the compiler to fail if the substitution cannot be done the \texttt{@tailrec} annotation can be used\autocite{ScalaScala.annotation.tailrec}} [[As always follow an example]]
+There is a way to overcome this, as functions in which the last expression
+calculated is the recursive call, called tail-recursive, can be efficiently
+implemented by an optimisation of the compiler which can substitute the
+recursive call for a \texttt{goto} statement without the expenses of new stack
+frame allocations \autocite{Steele1977DebunkingGoto} \footnote{In Scala in order
+to tell the compiler to fail if the substitution cannot be done the
+\texttt{@tailrec} annotation can be
+used\autocite{ScalaScala.annotation.tailrec}} [[As always follow an example]]
 
-\subsubsection{Higher order functions}
-Higher order functions refer to functions which accept functions as parameters. In Scala functions have their own type, like \texttt{String}s or \texttt{Int}s do. This way they are treated as other kind of values. As an example a string trimming function can be created. This function will iterate character by character the string and will remove the element if a specific condition is met. The predicate to remove a character is decided by the caller. [[Introduce example]]
+\subsubsection{Higher order functions} Higher order functions refer to functions
+which accept functions as parameters. In Scala functions have their own type,
+like \texttt{String}s or \texttt{Int}s do. This way they are treated as other
+kind of values. As an example a string trimming function can be created. This
+function will iterate character by character the string and will remove the
+element if a specific condition is met. The predicate to remove a character is
+decided by the caller. [[Introduce example]]
 
 \subsection{Parametric polymorphism and Type classes}
-\subsubsection{Parametric polymorphism}
-Functional programming can express polymorphism by the use of generic types in function declarations. It allow functions to take parameters with an abstract type. In Scala to use a generic type in a function, the generic must be defined between square brackets after the function name. This way the function can be defined one time but used by different types. As an example a list length function can be defined. 
+\subsubsection{Parametric polymorphism} Functional programming can express
+polymorphism by the use of generic types in function declarations. It allow
+functions to take parameters with an abstract type. In Scala to use a generic
+type in a function, the generic must be defined between square brackets after
+the function name. This way the function can be defined one time but used by
+different types. As an example a list length function can be defined.
 
 [[Example parriba y pabajo]]
 
-This function will take a \texttt{List[A]} of elements of a generic type \texttt{A} and compute the length of it regardless of the actual type of the elements of the list. When the function is called the actual type [A] will be resolved.
+This function will take a \texttt{List[A]} of elements of a generic type
+\texttt{A} and compute the length of it regardless of the actual type of the
+elements of the list. When the function is called the actual type [A] will be
+resolved.
 
-\subsubsection{Type classes}
-Although parametric polymorphism is good when the details of the generic type are irrelevant it lacks the possibility to define a behaviour that is associated with the type itself. 
+\subsubsection{Type classes} Although parametric polymorphism is good when the
+details of the generic type are irrelevant it lacks the possibility to define a
+behaviour that is associated with the type itself.
 
-Type classes \footnote{Not to be confused with Object Oriented classes} was defined in Haskell as a way to implement Ad-hoc polymorphism \autocite{Hall1994TypeHaskell}. A type class is an abstract representation of a behaviour that types which belong to the class posses. If a type can implement the type class behaviour it becomes an instance of it and the type itself belongs to the class. 
+Type classes \footnote{Not to be confused with Object Oriented classes} was
+defined in Haskell as a way to implement Ad-hoc polymorphism
+\autocite{Hall1994TypeHaskell}. A type class is an abstract representation of a
+behaviour that types which belong to the class posses. If a type can implement
+the type class behaviour it becomes an instance of it and the type itself
+belongs to the class.
 
 [[Present example]]
 
-In Scala, implicit resolution was implemented as a way to have type classes resolved at compile time without the need of the function caller to provide the instance manually and have it resolved automatically by the compiler in an object oriented language \autocite{Oliveira2010TypeImplicits}.
+In Scala, implicit resolution was implemented as a way to have type classes
+resolved at compile time without the need of the function caller to provide the
+instance manually and have it resolved automatically by the compiler in an
+object oriented language \autocite{Oliveira2010TypeImplicits}.
 
-Typeclasses are a very useful because they allow to decouple structure from behaviour. If a specific behaviour is desired for a given type it is not needed to modify the source of the type itself, a type class instance can be provided in a separate source file. This is specially useful when using third party compiled dependencies. If a new functionality it is required for them as they are compiled its source code cannot be modified. However a type class instance can be provided to enrich its capabilities.
+Typeclasses are a very useful because they allow to decouple structure from
+behaviour. If a specific behaviour is desired for a given type it is not needed
+to modify the source of the type itself, a type class instance can be provided
+in a separate source file. This is specially useful when using third party
+compiled dependencies. If a new functionality it is required for them as they
+are compiled its source code cannot be modified. However a type class instance
+can be provided to enrich its capabilities.
 
 [[Rellenar con type classes]]
 
-\subsection{Functional data structures}
-At the beginning of the section among the different kind of side effects one of the mentioned was \textit{Modifying a data structure in place}. If modifying a data structure in place produces a side effect and breaks referential transparency data structures must be defined immutable by default, and as a corollary on this property, operations on them must not modify their internals but return a new one with the changes desired.
+\subsection{Functional data structures} At the beginning of the section among
+the different kind of side effects one of the mentioned was \textit{Modifying a
+data structure in place}. If modifying a data structure in place produces a side
+effect and breaks referential transparency data structures must be defined
+immutable by default, and as a corollary on this property, operations on them
+must not modify their internals but return a new one with the changes desired.
 
-Languages that weren't designed to be functional usually define their data structures as mutable ones. In Java, the Collection class, root of the hierarchy of a great number of data structures defines most of its operations as mutable \autocite{Collection}. As an example the method add has the following definition \texttt{boolean add(E e)}. The returned type of the method is a boolean, which according to the documentation "is true if this collection changed as a result of the call". The definition implies that mutation has been done in place.
+Languages that weren't designed to be functional usually define their data
+structures as mutable ones. In Java, the Collection class, root of the hierarchy
+of a great number of data structures defines most of its operations as mutable
+\autocite{Collection}. As an example the method add has the following definition
+\texttt{boolean add(E e)}. The returned type of the method is a boolean, which
+according to the documentation "is true if this collection changed as a result
+of the call". The definition implies that mutation has been done in place.
 
-The main problem with this is that libraries that want to subclass the Java Collections API and be compatible with the standard library have to maintain this constraints. This has lead to immutable collection implementations like Google's Guava Immutable Collection library \autocite{ImmutableCollectionAPI} serving only as immutable representations of data structures but not providing a rich set of operations to modify them.
+The main problem with this is that libraries that want to subclass the Java
+Collections API and be compatible with the standard library have to maintain
+this constraints. This has lead to immutable collection implementations like
+Google's Guava Immutable Collection library \autocite{ImmutableCollectionAPI}
+serving only as immutable representations of data structures but not providing a
+rich set of operations to modify them.
 
-Scala for example provides two type of collections. Immutable and Mutable ones. Scala documentation states "Scala collections systematically distinguish between mutable and immutable collections. A mutable collection can be updated or extended in place. This means you can change, add, or remove elements of a collection as a side effect. Immutable collections, by contrast, never change. You have still operations that simulate additions, removals, or updates, but those operations will in each case return a new collection and leave the old collection unchanged" \autocite{MutableDocumentation}.
+Scala for example provides two type of collections. Immutable and Mutable ones.
+Scala documentation states "Scala collections systematically distinguish between
+mutable and immutable collections. A mutable collection can be updated or
+extended in place. This means you can change, add, or remove elements of a
+collection as a side effect. Immutable collections, by contrast, never change.
+You have still operations that simulate additions, removals, or updates, but
+those operations will in each case return a new collection and leave the old
+collection unchanged" \autocite{MutableDocumentation}.
 \end{document}
