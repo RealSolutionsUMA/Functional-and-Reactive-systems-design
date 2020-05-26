@@ -35,6 +35,8 @@ One of the benefits of referential transparency is local reasoning. In order to 
 
 When referential transparency is not present this is no longer possible. As an example consider a function which depends on a global variable \texttt{name}, and returns a greeting with that name [[Introduce the example]].
 
+\lstinputlisting[language=Scala]{code/sbc.sc}
+
 To understand the behaviour of the function it is needed to know the context in which it is called, i.e. inspect where the variable \texttt{name} is assigned and also when assignments to the variable occur previous to the function call.
 
 But even though it is possible to analyse the behaviour at a certain point in time it is not possible to ensure that without changes to the function itself, the functionality will keep the same, as changes in the context of the function regarding the variable \texttt{name} may change the behaviour of the function in the future [[Introduce new example]].
