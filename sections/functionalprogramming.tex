@@ -46,7 +46,6 @@ $2$ two different outputs are returned, \texttt{res1: Int = 5} and \texttt{res1:
     \texttt{readLine} function is not pure}
 \end{figure}
 
-
 The elements which make language functions not perform as mathematical functions
 are called side effects. To make differentiation functions that don't have side
 effects are referred to as pure functions\autocite{UsingAttributes} while
@@ -62,12 +61,25 @@ Side effects that can make a function not pure are
 \end{itemize}
 
 \subsection{Referential transparency} When treating with pure functions there is
-a one to one relation betweeen a function call and the result it produces. For
+a one to one relation between a function call and the result it produces. For
 example we can see that the expression $2 + 2$ is the same as $4$. In
 mathematics this is a very important property when solving equations. On the
 process of solving them usually both sides of it are simplified by applying
 operations that reduce the number of elements on each side until we get a simple
-expression that its trivial to solve [[Include example]].
+expression that its trivial to solve. In figure \ref{fig:refequation} this
+process is showcased.
+
+\begin{figure}[ht]
+  \centering
+  $ 2x - x = \sqrt{16} + 2 \cdot 2$
+
+  $ x = 4 + 4$
+
+  $ x = 8 $
+  \caption{\label{fig:refequation} Solving a equation by simplifying with
+    referential transparency}
+\end{figure}
+
 
 This property is called referential transparency
 \autocite{Strachey2000FundamentalLanguages} and is a very important property of
@@ -98,11 +110,33 @@ To understand the behaviour of the function it is needed to know the context in
 which it is called, i.e. inspect where the variable \texttt{name} is assigned
 and also when assignments to the variable occur previous to the function call.
 
+In the script shown in Listing \ref{lst:greetctx1} it is possible to analyse
+that the output Will be \texttt{Greeetings itnaS !} as the name is assigned
+to Santi first and then is reversed.
+
+\lstinputlisting[
+  caption=An execution of greet which first reverses \texttt{name},
+  captionpos=b,
+  label={lst:greetctx1}
+]{GreetCtx1.sc}
+
 But even though it is possible to analyse the behaviour at a certain point in
-time it is not possible to ensure that without changes to the function itself,
-the functionality will keep the same, as changes in the context of the function
-regarding the variable \texttt{name} may change the behaviour of the function in
-the future [[Introduce new example]].
+time it is not possible to ensure that without changes to the source code of the
+function itself the functionality will keep the same. Changes in the context
+of the function regarding the variable \texttt{name} may change the behaviour of
+the function in the future. In the script from listing \ref{lst:greetctx2}
+without changes to \texttt{greeting} nor \texttt{greetReversed} the result is different.
+
+\lstinputlisting[
+  caption=An execution of greet which first reverses \texttt{name},
+  captionpos=b,
+  label={lst:greetctx2}
+]{GreetCtx2.sc}
+
+This examples are rather small and thus it is not that difficult to understand
+the context, but in an enterprise application where there are many more
+components it may not be that easy. The reasoning model depending on mutable
+state doesn't scale that well.
 
 \subsubsection{The substitution model and equational reasoning}
 
@@ -110,22 +144,27 @@ When referential transparency is given, a new reasoning model for functional
 programs can be achieved, called equational reasoning. When reasoning about a
 functional program it is possible to start substituting function calls for the
 value they result in. To understand how a program behaves in term of its inputs
-the only thing its needed to do is to start changing the calls for results they
-producce. [[Do and follow an example of RT]]
+the only thing its needed to do is substitute function calls for results they
+produce.
+
+This is possible because of the definition of a function. If a function $f$ maps an
+element from the domain $a$ to one of the codomain $b$ then $f(a) = b$ and as it
+was presented in the example of referential transparency the substitution can be
+applied.
 
 The substitution model can be useful in multiple scenarios. For example, to
 debug errors, this model can be applied. The first step is to get the arguments
 of the misbehaving function. Once they have been acquired the next step is to
-start substituting. For every substitution, it is checked that the result of it
-is the one expected. At the moment that a function results to a non expected
-result the cause of the error is found.
+start substituting each function for the value it returns. For every
+substitution, it is checked that the result of it is the one expected. At the
+moment that a function results to a non expected result the cause of the error
+is found.
 
 This process can be done automatically by running a debugger which allows to
 evaluate expressions and also manually by calculating the results by hand. A
 mixed approach could be by using a REPL (Read–eval–print loop). This tool allows
 to import certain functions and use them interactively. Some examples are The
-Scala REPL and GHCi for Haskell. An example of use is shown [[Introduce
-example]].
+Scala REPL and GHCi for Haskell.
 
 \subsubsection{Function Composition and safe refactoring} The substitution model
 can also be used to safely refactor code when repetitions occur [[Explain
