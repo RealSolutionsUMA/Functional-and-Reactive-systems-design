@@ -1,3 +1,8 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main.tex"
+%%% End:
+
 \documentclass[../main.tex]{subfiles}
 
 \begin{document}
@@ -123,20 +128,23 @@ to Santi first and then is reversed.
 But even though it is possible to analyse the behaviour at a certain point in
 time it is not possible to ensure that without changes to the source code of the
 function itself the functionality will keep the same. Changes in the context
-of the function regarding the variable \texttt{name} may change the behaviour of
+of the function call regarding the variable \texttt{name} may change the behaviour of
 the function in the future. In the script from listing \ref{lst:greetctx2}
-without changes to \texttt{greeting} nor \texttt{greetReversed} the result is different.
+without changes to \texttt{greeting} the result of the call is different. In
+addition to that the side effect that the \texttt{greetReversed} call made has
+been completely overriden.
 
 \lstinputlisting[
-  caption=An execution of greet which first reverses \texttt{name},
+  caption=An execution of greet which changes the \texttt{name} after reversing it,
   captionpos=b,
   label={lst:greetctx2}
 ]{GreetCtx2.sc}
 
 This examples are rather small and thus it is not that difficult to understand
 the context, but in an enterprise application where there are many more
-components it may not be that easy. The reasoning model depending on mutable
-state doesn't scale that well.
+components the solution doesn't scale that well. As the uses of the mutable
+state increase the understanding of functions which use them start to be more
+complex.
 
 \subsubsection{The substitution model and equational reasoning}
 
@@ -148,39 +156,75 @@ the only thing its needed to do is substitute function calls for results they
 produce.
 
 This is possible because of the definition of a function. If a function $f$ maps an
-element from the domain $a$ to one of the codomain $b$ then $f(a) = b$ and as it
-was presented in the example of referential transparency the substitution can be
-applied.
+element from the domain $a$ to one of the codomain $b$ then $f(a)$ can
+transparently be replaced by $b$ and the same kind of substitution that were
+presented on the figure \ref{fig:refequation} can be applied to programs.
 
-The substitution model can be useful in multiple scenarios. For example, to
-debug errors, this model can be applied. The first step is to get the arguments
-of the misbehaving function. Once they have been acquired the next step is to
-start substituting each function for the value it returns. For every
-substitution, it is checked that the result of it is the one expected. At the
+The substitution model can be useful in multiple scenarios. One example is the
+ability to debug errors in a reproducible manner.
+
+The first step is to get the arguments of the misbehaving function. Once they have been acquired the next step is to
+start substituting each function call for the value it returns. Whenever the
+substitution is made, it is checked that the result of it is the one expected. At the
 moment that a function results to a non expected result the cause of the error
 is found.
 
-This process can be done automatically by running a debugger which allows to
-evaluate expressions and also manually by calculating the results by hand. A
-mixed approach could be by using a REPL (Read–eval–print loop). This tool allows
-to import certain functions and use them interactively. Some examples are The
-Scala REPL and GHCi for Haskell.
+As told before in the local reasoning section this is not possible in a non
+functional program, as a function result is not self contained but it depends of
+the context in which it is called.
 
-\subsubsection{Function Composition and safe refactoring} The substitution model
-can also be used to safely refactor code when repetitions occur [[Explain
-later]]. The main reason of why functional code can be safely refactored is
-because of function composition. As defined at the beginning of the section
-functional programs are defined by the composition of functions.
+This debugging process can be done automatically by running a debugger which allows to
+evaluate expressions on the go. A more manual approach would be by the use of
+the use of the Scala REPL (Read–eval–print loop). This tool allows the import
+certain functions of a program in a shell which can run them with arbitrary
+parameters to help to identify the flaws of programs.
 
-A function takes as input an element of the type of its domain ($A$) and
-produces a result of the type of its codomain ($B$). The notation that will be
-used for representing such functions will be the same as the Scala programming
-language uses. The function previously mentioned would be represented as
-\texttt{f: A => B}.
+\subsubsection{Function Composition and safe refactoring}
+
+The substitution model can also be used to safely refactor code when repetitions
+occur. There are two reasons of why functional code can be safely
+refactored. The first is, again, referential transparency.  is because of function composition. As defined at the beginning of the section functional programs are defined by the composition of functions.
 
 If we have a function \texttt{f: A => B} and another function \texttt{g: B => C}
 both can be composed by mathematical composition $g \circ f$ to create a new
-function \texttt{h: A => C}.
+function \texttt{h: A => C}. At the beginning of the section it was stated that
+this is indeed the essence of functional programming. Programs are composed by
+functions that are at the same times composed of other functions or expressions.
+
+Even programs which define variables which are then used by other functions are
+at the end functions defined by composition. This is a corollary of the
+substitution model. As variables in functional programming are no more than
+named results of expressions every variable can be substituted by the expression
+which produced it. As this expressions can also be composed of other variables
+this process has to be done recursively until no more variables are there.
+
+At the very end of the substitutions the only thing that will be left is a pure
+expression. This is very useful because a function composition that has been
+used in many places can be factored to an auxiliary function without
+compromising the behaviour of the functions and improving mantainability of the
+code.
+
+Listing \ref{lst:functionalgreeting} showcases this behaviour. A pure function
+like \texttt{greetCapitalized} is no more than the composition of previously defined
+functions.
+
+\lstinputlisting[
+  caption=An example of how functional programming is about function composition,
+  captionpos=b,
+  label={lst:functionalgreeting}
+]{FunctionalGreeter.sc}
+
+The same function can be defined by the use of intermediate variables instead of
+function composition. Listing \ref{lst:variablefunctionalgreeting} is the
+transformation of the previous example using intermediate variables
+
+\lstinputlisting[
+  caption=An example of how functional programming is about function composition,
+  captionpos=b,
+  label={lst:variablefunctionalgreeting}
+]{VariableFunctionalGreeter.sc}
+
+With that being said this process can be
 
 This way it is possible to refactor a set of expressions used within a function
 to a new one. This can be achieved safely as long as side effects are not

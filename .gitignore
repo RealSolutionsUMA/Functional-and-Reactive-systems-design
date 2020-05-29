@@ -327,3 +327,7 @@ TSWLatexianTemp*
 
 ### Auctex
 _region_.*
+
+### Metals
+.metals/
+
