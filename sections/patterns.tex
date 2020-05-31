@@ -3,6 +3,10 @@
 %%% TeX-master: "main"
 %%% End:
 
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
 \subsection{Improving Resilience with Computational effects}
 In 1991 Eugenio Moggi [[Insert citation]] described a model in category theory
 for separating the set of values a object \texttt{A} could have from the notion
@@ -84,9 +88,9 @@ can keep functional at its core and the benefits of purity are not lost until
 the interpretation of the side effects.
 
 \subsubsection{The resilience of computational effects}
-In static typed programming languages effects offers greater resilience as the
+In static typed programming languages computational effects offers a greater resilience as the
 programmer has to explicitly deal with the effect and can not ignore the
-effectful nature like having a possible error, like Either, or being a possibly
+effectful nature of it like having a possible error, an Either effect, or being a possibly
 future value, i. e. IO.
 
 This implicit treatment of effects like the use of a \texttt{Null} pointer has
@@ -100,4 +104,37 @@ without the programmer supervision.
 Effects are then a pattern that improve the reactiveness of functional programs by
 improving the resilience with the use of the type system.
 
-\subsection{Avoiding thread blocking by the use of Futures}
+\subsection{Leveraging Multiprocessing by the use of Futures}
+Futures, also called Promises, model an asynchronous computational model in
+which operations can be ran in a separate thead of execution from the calling
+thread of the future itself.
+
+A Future can be created using the \texttt{apply} method of the companion object
+of the trait \texttt{Future}. An invocation have this form
+\texttt{Future(\textit{expr})}. This would evaluate expr in the background. The
+call returns immediatly with a result of type Future[A], being A the result type
+of the expression \texttt{\textit{expr}}.
+
+Futures favour the use of non blocking computation. Computations that could
+block the thread of execution, e.g. Blocking I/O like fetching a resource
+through the network, should be ran inside Futures. This contributes to
+the overall application reactiveness by terms of responsivenes by improving the
+overall request latency and by reducing the load of the main execution thread.
+
+\paragraph{Latency improvements of futures}
+
+By spawning blocking calls in separate threads of execution the response time of
+a request transitions from being the sum of the latencies of the independent
+blocking operations to the latency of the longest one. This is represented in
+figure \ref{fig:futurelatency}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{futurelatency.png}
+  \caption{\label{fig:futurelatency}
+    At the left of the figure a sequential run of the blocking operations. At
+    the right a parallel execution which combines the results
+  }
+\end{figure}
+
+\end{document}
