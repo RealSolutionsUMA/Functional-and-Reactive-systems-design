@@ -115,11 +115,13 @@ of the trait \texttt{Future}. An invocation have this form
 call returns immediatly with a result of type Future[A], being A the result type
 of the expression \texttt{\textit{expr}}.
 
-Futures favour the use of non blocking computation. Computations that could
-block the thread of execution, e.g. Blocking I/O like fetching a resource
-through the network, should be ran inside Futures. This contributes to
-the overall application reactiveness by terms of responsivenes by improving the
-overall request latency and by reducing the load of the main execution thread.
+\subsubsection{Making models reactive by the use of Futures}
+
+Computations that could block the thread of execution, e.g. Blocking I/O like
+fetching a resource through the network, should be ran inside Futures. This
+contributes to the overall application reactiveness by terms of responsivenes by
+improving the overall request latency and by reducing the load of the main
+execution thread.
 
 \paragraph{Latency improvements of futures}
 
@@ -136,5 +138,32 @@ figure \ref{fig:futurelatency}
     the right a parallel execution which combines the results
   }
 \end{figure}
+
+\subsubsection{Futures are highly composable}
+Futures are designed to be composable. Instead of transforming the result of the
+future by waiting for the completion of the inner expression to be completed
+method of a \texttt{Future[A]} allow to transform it by passing description of what
+should be done once the Future is completed this methods don't block until the
+future is complete but return a \texttt{Future[B]} being \texttt{B} the type of the transformed
+value from \texttt{A}.
+
+\paragraph{Freeing the load of the main thread of execution}
+
+In web servers there is usually a fixed thread pool for handling requests. This
+thread pool has a maximum number of threads available to prevent the systems
+from collapsing. In tomcat for example when this threshold is surpassed no more
+request can be met and the request start to be stacked. Moment in which latency
+starts to increase in a great manner.
+
+Futures have an implicit parameter which defines the execution context in which
+the future expression will be ran. [[cite execution context from API]]. An
+execution context may have associated an specific thread pool. This can be used
+for making the blocking calls to be executed in a separate pool for blocking
+tasks, freeing the main thread thread pool which is only responsible of spawning the tasks
+of Futures, but not of running them.
+
+\subsection{The IO monad as a referential transparent Future}
+Future has many properties that make it an appropiate construct for modeling
+asynchronous operations. However its operations are not referential transparent.
 
 \end{document}
