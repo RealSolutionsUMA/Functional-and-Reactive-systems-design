@@ -182,27 +182,27 @@ parameters to help to identify the flaws of programs.
 \subsubsection{Function Composition and safe refactoring}
 
 The substitution model can also be used to safely refactor code when repetitions
-occur. There are two reasons of why functional code can be safely
-refactored. The first is, again, referential transparency.  is because of function composition. As defined at the beginning of the section functional programs are defined by the composition of functions.
+occur. There are two reasons of why functional code can be safely refactored.
+The first is, referential transparency. The second is because of function
+composition.
 
-If we have a function \texttt{f: A => B} and another function \texttt{g: B => C}
-both can be composed by mathematical composition $g \circ f$ to create a new
-function \texttt{h: A => C}. At the beginning of the section it was stated that
-this is indeed the essence of functional programming. Programs are composed by
-functions that are at the same times composed of other functions or expressions.
+As defined at the beginning of the section functional programs are defined by
+the composition of functions. If we have a function \texttt{f: A => B} and
+another function \texttt{g: B => C} both can be composed by mathematical
+composition $g \circ f$ to create a new function \texttt{h: A => C}. At the
+beginning of the section it was stated that this is indeed the essence of
+functional programming. Programs are composed by functions that are at the same
+times composed of other functions or expressions.
 
 Even programs which define variables which are then used by other functions are
 at the end functions defined by composition. This is a corollary of the
 substitution model. As variables in functional programming are no more than
-named results of expressions every variable can be substituted by the expression
+named results of expressions, every variable can be substituted by the expression
 which produced it. As this expressions can also be composed of other variables
-this process has to be done recursively until no more variables are there.
+this process has to be done recursively until there are no more variables.
 
 At the very end of the substitutions the only thing that will be left is a pure
-expression. This is very useful because a function composition that has been
-used in many places can be factored to an auxiliary function without
-compromising the behaviour of the functions and improving mantainability of the
-code.
+expression.
 
 Listing \ref{lst:functionalgreeting} showcases this behaviour. A pure function
 like \texttt{greetCapitalized} is no more than the composition of previously defined
@@ -216,7 +216,9 @@ functions.
 
 The same function can be defined by the use of intermediate variables instead of
 function composition. Listing \ref{lst:variablefunctionalgreeting} is the
-transformation of the previous example using intermediate variables
+transformation of the previous example using intermediate variables. At the end
+both functions are semantically equivalent, but the former does explicit
+function composition and the other is by the use of intermediate variables.
 
 \lstinputlisting[
   caption=An example of how functional programming is about function composition,
@@ -224,14 +226,12 @@ transformation of the previous example using intermediate variables
   label={lst:variablefunctionalgreeting}
 ]{VariableFunctionalGreeter.sc}
 
-With that being said this process can be
-
-This way it is possible to refactor a set of expressions used within a function
-to a new one. This can be achieved safely as long as side effects are not
-present in them. [[Follow an example using this]].
-
-This is also a corollary of the substitution principle as how the function
-composition mechanism works
+Using this principle it is possible to refactor a set of expressions used within
+a function to a new one and replace them transparently. This can be achieved
+without compromising the programs functionality as long as side effects are not
+present in them. If during the program design process it is found repeated code
+it can be factored into a function, then substitute the repeated code by the
+function call.
 
 \subsection{Functional programming constructs and programming languages} The
 functional programming paradigm suits better in some programming languages that
