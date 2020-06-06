@@ -42,7 +42,7 @@ and returns this read integer added to the parameter n.
 This function breaks the definition of a pure function. In figure
 \ref{fig:readLineN} a Scala interactive session is ran with the previous
 function defined. In this session it can be observed that for the same function input
-$2$ two different outputs are returned, \texttt{res1: Int = 5} and \texttt{res1:
+\texttt{2} two different outputs are returned, \texttt{res1: Int = 5} and \texttt{res1:
   Int = 6} which is a violation of the definition of pure function given before.
 
 \begin{figure}[ht]
@@ -93,8 +93,20 @@ functional programming.
 The reason of why referential transparency is only possible when using pure
 functions lies in its definition. If a function is not pure, an element of the
 domain may be related with multiple elements of the codomain, thus, it is not
-posible to know a priori which is the related element to the input. [[Include
-another example]]
+posible to know a priori which is the related element to the input.
+
+\begin{figure}[ht]
+  \centering \includegraphics[width=0.5\textwidth]{ImpureFunction}
+  \caption{\label{fig:impurefunction} a representation of the relationship of
+    the readLine procedure}
+\end{figure}
+
+The Figure \ref{fig:impurefunction} represents this indeterminism with the
+previously mentioned \texttt{readLine} procedure. The input 2
+has two possible results, 5 and 6, and this are not the only possible results.
+There are as much as \texttt{Int}s. Which one should be the one substituted? The
+given result will only be resolved at run time and thus referential transparency
+is lost.
 
 \subsubsection{Local reasoning} One of the benefits of referential transparency
 is local reasoning. In order to understand how a function behaves it is only
@@ -267,7 +279,16 @@ a variable, in order to do something useful.
 
 There is one exception in which the if/else statement could produce a value
 while not breaking referential transparency. Which is in the case that the
-return of the function is done inside the if block [[Another example]].
+return of the function is done inside the if block. As in Scala this imperative
+construct is not present the Listing \ref{lst:functionalifelse} presents this in
+the Java class \texttt{FunctionalIf} which showcases in the function
+\texttt{abs} how the if construct can be used in a referential transparent manner.
+
+\lstinputlisting[
+caption=An example of imperative if else which does not break referential transparency,
+captionpos=b,
+label={lst:functionalifelse}
+]{Java/src/FunctionalIf.java}
 
 \subsubsection{Functional expressions} Functional programming languages by
 contrast provide construct that enable composing programs by referential
@@ -298,58 +319,103 @@ recursive call for a \texttt{goto} statement without the expenses of new stack
 frame allocations \autocite{Steele1977DebunkingGoto} \footnote{In Scala in order
 to tell the compiler to fail if the substitution cannot be done the
 \texttt{@tailrec} annotation can be
-used\autocite{ScalaScala.annotation.tailrec}} [[As always follow an example]]
+used\autocite{ScalaScala.annotation.tailrec}}.
+
+An example can be a function which calculates the sum of a list of integers. To
+allow tail recursion a auxiliar function is provided. It accepts an integer
+parameter along with the list which accumulates the partial result which is
+provided. As the sum operation of integers forms a monoid with 0 as the identity
+element the initial call must be made with 0 as Listing \ref{lst:listsum} shows.
+
+\lstinputlisting[
+caption=A function summing a list of Integers which doesn't perform a frame
+allocation on stack in the recursive call,
+captionpos=b,
+label={lst:listsum}
+]{ListSum.sc}
+
 
 \subsubsection{Higher order functions} Higher order functions refer to functions
 which accept functions as parameters. In Scala functions have their own type,
 like \texttt{String}s or \texttt{Int}s do. This way they are treated as other
-kind of values. As an example a string trimming function can be created. This
-function will iterate character by character the string and will remove the
-element if a specific condition is met. The predicate to remove a character is
-decided by the caller. [[Introduce example]]
+regular type for the compiler, having the capacity to be passed around as any
+other value.
 
-\subsection{Parametric polymorphism and Type classes}
-\subsubsection{Parametric polymorphism} Functional programming can express
-polymorphism by the use of generic types in function declarations. It allow
-functions to take parameters with an abstract type. In Scala to use a generic
-type in a function, the generic must be defined between square brackets after
-the function name. This way the function can be defined one time but used by
-different types. As an example a list length function can be defined.
+As an example of use of use a string trimming function is shown in listing \ref{lst:stringtrimmer}. This
+function will iterate character by character the string and will remove a
+character if a specific condition is met. The predicate to remove a character is
+decided by the caller. This predicate is a function \texttt{pred: Char => Boolean}
 
-[[Example parriba y pabajo]]
+\lstinputlisting[
+caption=Trimming a string based on a predicate,
+captionpos=b,
+label={lst:stringtrimmer}
+]{StringTrimmer.sc}
 
-This function will take a \texttt{List[A]} of elements of a generic type
-\texttt{A} and compute the length of it regardless of the actual type of the
-elements of the list. When the function is called the actual type [A] will be
-resolved.
+\subsection{Polymorphism in Functional Programming}
+\subsubsection{Parametric polymorphism}
+
+One way in which functional programs can express polymorphism by the use of
+generic types in function declarations. This mechanism, extended nowadays to
+many programming languages, allow functions to take parameters
+with an abstract type which will be resolved when the function is called. In Scala to use a generic type in a
+function, the generic type
+must be defined between square brackets after the function name. This way the
+function can be defined one time but be used by different types. The function
+filter defined previously for Listing \ref{lst:stringtrimmer} can be generalized
+for a generic list \texttt{List[A]} as shown in \ref{lst:listfilter}
+
+\lstinputlisting[
+caption=Filtering the elements of a generic List,
+captionpos=b,
+label={lst:listfilter}
+]{Filter.sc}
 
 \subsubsection{Type classes} Although parametric polymorphism is good when the
 details of the generic type are irrelevant it lacks the possibility to define a
 behaviour that is associated with the type itself.
 
-Type classes \footnote{Not to be confused with Object Oriented classes} was
+Type classes \footnote{Not to be confused with classes in Object Oriented Programming} were
 defined in Haskell as a way to implement Ad-hoc polymorphism
 \autocite{Hall1994TypeHaskell}. A type class is an abstract representation of a
-behaviour that types which belong to the class posses. If a type can implement
-the type class behaviour it becomes an instance of it and the type itself
-belongs to the class.
-
-[[Present example]]
+behaviour that types belonging to the class posses. If a type can implement
+the type class behaviour it becomes an instance of the type class and it is said
+that the type belongs to the class.
 
 In Scala, implicit resolution was implemented as a way to have type classes
 resolved at compile time without the need of the function caller to provide the
 instance manually and have it resolved automatically by the compiler in an
 object oriented language \autocite{Oliveira2010TypeImplicits}.
 
-Typeclasses are a very useful because they allow to decouple structure from
-behaviour. If a specific behaviour is desired for a given type it is not needed
-to modify the source of the type itself, a type class instance can be provided
-in a separate source file. This is specially useful when using third party
-compiled dependencies. If a new functionality it is required for them as they
-are compiled its source code cannot be modified. However a type class instance
-can be provided to enrich its capabilities.
+To illustrate the example a typeclass called \texttt{Show} is presented in
+Listing \ref{lst:showtypeclass} with some instances. This typeclass is very
+illustrative because in Scala there is a \texttt{toString} method in the
+\texttt{Any} class[[Add reference to API]] which every class must extend but it
+is very error prone as its default implementation returns the hashCode of the
+class, which may not be the wanted implementation. In case that the programmer
+forgets to override the method the error can only be caught at run time. When
+using the type class if a specific instance is not resolved at compile time the
+program will fail to compile improving the overall resilience.
 
-[[Rellenar con type classes]]
+\lstinputlisting[
+caption=Different instances of the \texttt{Show} typeclass,
+captionpos=b,
+label={lst:showtypeclass}
+]{Show.sc}
+
+Typeclasses are a very useful form of polymorphism because they allow to decouple structure from
+behaviour. If a specific behaviour is desired for a given type it is not needed
+to modify the source of the class of it, a type class instance can be provided
+in a separate source file. This is specially useful when using third party
+libraries. If a new functionality it is required for them as they
+are compiled its source code cannot be modified. Nevertheless a type class instance
+with the desired functionality can be provided to enrich its capabilities.
+
+There is one way to make the use of typeclasses less cumbersome and more natural
+with the use of Implicit Classes. This mechanism allows to wrap an existing
+class and add methods which use the instances of the given type class as if they
+were of the originally defined for the type.  Listing \ref{lst:typeclasssyntax}
+shows how they can be used for our instances.
 
 \subsection{Functional data structures} At the beginning of the section among
 the different kind of side effects one of the mentioned was \textit{Modifying a
