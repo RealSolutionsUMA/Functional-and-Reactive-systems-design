@@ -71,21 +71,27 @@ avoiding to explicitly pass the state all along the way.
 \paragraph{IO Monad}
 Side effects are inherently non functional. A side effect such as reading input
 from the keyboard implies that every time that this operation is called the
-outcome may be different breaking referential transparency.
+outcome may be different, breaking referential transparency.
 
 However if we look to the description of operations that do side effects they
-have nothing that implies a breaking of referential transparency. For example
-the function read from keyboard whould have the type \texttt{() => A} which a
-pure function could have.
+have nothing that implies this lose of referential transparency. For example
+the function read from keyboard whould have the type \texttt{() => A} which is a
+perfectly valid type a pure function could have.
 
-If the side effect is abstracted from the function definition the purity is
-mantained. This is what the IO monad does. When a function is passed to the IO
-the execution is suspended. It is not executed until the programmer runs the
-computation, moment at which purity is lost.
+If the execution of the function with the side effect is delayed, what it
+would end up being is just a description of it, without exposing its impure
+nature. This is what the IO monad does. When a function is passed to the IO
+the execution is suspended and the description of it is captured. It is not
+until the programmer runs the descriptions wrapped in the IO Monad that the
+referential transparency is lost.
 
-If side effects execution is delayed until the very end of the execution programs
+If this side effect execution is delayed until the very end of programs, they
 can keep functional at its core and the benefits of purity are not lost until
-the interpretation of the side effects.
+the interpretation of the side effects which is usually done as the last step of
+the computation. Usually, in order to avoid running the execution of the side
+effects manually, the entry function of the application expects an IO to be
+returned which will be then be interpreted. This is exactly what the main method
+of Haskell does [[Insert reference]]
 
 \subsubsection{The resilience of computational effects}
 In static typed programming languages computational effects offers a greater resilience as the
@@ -165,5 +171,33 @@ of Futures, but not of running them.
 \subsection{The IO monad as a referential transparent Future}
 Future has many properties that make it an appropiate construct for modeling
 asynchronous operations. However its operations are not referential transparent.
+By the definition of
+it, if Future was referentially transparent the result of the operations on a
+Future should be the same regardless if they operation functions were composed
+directly or if by saved in variables.
+
+\lstinputlisting[
+caption=An example of how Future is not referentially transparent,
+captionpos=b,
+label={lst:impurefuture}
+]{ImpureFuture.sc}
+
+This lack of referential transparency is shown in Listing \ref{lst:impurefuture}. Two
+future variables are created on the top level \texttt{futureByVariable} and
+\texttt{futureByComposition}. This futures are created by composing two futures
+created by the same operation, \texttt{random.nextInt}. However in
+\texttt{futureByVariable} as \texttt{Future} caches the results of the function
+which was ran on it the operation isn't performed the second time, this caching
+is a indeed as a side effect given that a variable with the result value has to
+be updated once the operation has been performed.
+
+The IO Monad does not perform this caching and it is possible to save it into a
+variable without losing referential transparency as Listing \ref{lst:pureio}
+
+\lstinputlisting[
+caption=The IO Monad does not cache values and is referentially transparent,
+captionpos=b,
+label={lst:pureio}
+]{PureIO.sc}
 
 \end{document}
